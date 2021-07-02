@@ -39,22 +39,21 @@ namespace HadesUltrawideGUIPatcher
                         string line;
                         while ((line = sr.ReadLine()) != null)
                         {
-                            if (line.Trim().StartsWith("X = "))// || line.Trim(' ').StartsWith("SpacingX = "))
+                            if (line.Trim().StartsWith("X = "))
                             {
                                 var splitSentence = line.Split('=');
                                 int.TryParse(splitSentence[1], out int num);
                                 // Right aligned items
-                                if (num >= 1920 - alignmentThreshold)
+                                if (num >= OriginalResX - alignmentThreshold)
                                 {
-                                    num = 2580 + (num - 1920);
+                                    num = NewResX + (num - OriginalResX);
                                 }
                                 // Center aligned items
                                 else if (num >= alignmentThreshold)
                                 {
-                                    num = 1290 + (num - 960);
+                                    num = NewCenterX + (num - OriginalCenterX);
                                 }
                                 // The rest is left aligned, not adjusting those
-
                                 splitSentence[1] = num.ToString();
                                 line = string.Join("= ", splitSentence);
                             }
@@ -64,9 +63,9 @@ namespace HadesUltrawideGUIPatcher
                                 var splitSentence = line.Split('=');
                                 int.TryParse(splitSentence[1], out int num);
 
-                                if (num == 1920)
+                                if (num == OriginalResX)
                                 {
-                                    num = 2580;
+                                    num = NewResX;
                                     splitSentence[1] = num.ToString();
                                     line = string.Join("= ", splitSentence);
                                 }
@@ -103,9 +102,9 @@ namespace HadesUltrawideGUIPatcher
                                 var lineToModify = line.Remove(line.Length - 1);
                                 var splitSentence = lineToModify.Split('=');
                                 int.TryParse(splitSentence[1], out int num);
-                                if (num == 960)
+                                if (num == OriginalCenterX)
                                 {
-                                    splitSentence[1] = (1290 + (num - 960)).ToString();
+                                    splitSentence[1] = (NewCenterX + (num - OriginalCenterX)).ToString();
                                     var newLine = string.Join("= ", splitSentence);
                                     newLine += ',';
                                     line = newLine;
@@ -115,11 +114,11 @@ namespace HadesUltrawideGUIPatcher
                         }
                         else if (line.StartsWith("ScreenCenterX"))
                         {
-                            line = "ScreenCenterX = 2580/2";
+                            line = $"ScreenCenterX = {NewResX}/2";
                         }
                         else if (line.StartsWith("ScreenWidth"))
                         {
-                            line = "ScreenWidth = 2580";
+                            line = $"ScreenWidth = {NewResX}";
                         }
                         sb.AppendLine(line);
                     }
@@ -134,5 +133,10 @@ namespace HadesUltrawideGUIPatcher
         }
 
         public SteamGame Game { get; }
+
+        public int OriginalResX = 1920;
+        public int OriginalCenterX = 960;
+        public int NewResX = 2580;
+        public int NewCenterX = 1290;
     }
 }
