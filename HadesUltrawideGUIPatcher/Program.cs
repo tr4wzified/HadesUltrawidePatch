@@ -8,7 +8,8 @@ namespace HadesUltrawideGUIPatcher
     {
         static void Main(string[] args)
         {
-            var hades = new Hades();
+            var screen = new PrimaryScreen();
+            var hades = new Hades(screen);
             hades.PatchForUltrawide();
         }
     }

@@ -1,17 +1,24 @@
 ﻿using GameFinder.StoreHandlers.Steam;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace HadesUltrawideGUIPatcher
 {
     public class Hades
     {
-        public Hades()
+        private PrimaryScreen _screen;
+        public Hades(PrimaryScreen screen)
         {
+            _screen = screen;
+            NewInternalWidth = screen.Width / screen.Height * OriginalInternalHeight;
+            NewCenterX = NewInternalWidth / 2;
+
             var steamHandler = new SteamHandler();
             steamHandler.FindAllGames();
             Game = steamHandler.Games.Find(x => x.Name == "Hades");
@@ -25,6 +32,9 @@ namespace HadesUltrawideGUIPatcher
             PatchDebugKeyScreen();
             PatchAsphodel();
             PatchObstacles();
+            // Patch functions below touch same files as PatchScripts()
+            //PatchCreateScreenObstacle();
+            //PatchVignette();
         }
 
         private void PatchGUIConfigs()
@@ -49,14 +59,14 @@ namespace HadesUltrawideGUIPatcher
                                 int.TryParse(splitSentence[1], out int num);
 
                                 // Right aligned items
-                                if (num >= OriginalResX - AlignmentThreshold)
+                                if (num >= OriginalInternalWidth - SideAlignmentThreshold)
                                 {
-                                    num = NewResX + (num - OriginalResX);
+                                    num = Convert.ToInt32(NewInternalWidth) + (num - OriginalInternalWidth);
                                 }
                                 // Center aligned items
-                                else if (num >= AlignmentThreshold)
+                                else if (num >= SideAlignmentThreshold)
                                 {
-                                    num = NewCenterX + (num - OriginalCenterX);
+                                    num = Convert.ToInt32(NewCenterX) + (num - OriginalCenterX);
                                 }
                                 // The rest is left aligned, not adjusting those
 
@@ -69,9 +79,9 @@ namespace HadesUltrawideGUIPatcher
                                 var splitSentence = line.Split('=');
                                 int.TryParse(splitSentence[1], out int num);
 
-                                if (num == OriginalResX)
+                                if (num == OriginalInternalWidth)
                                 {
-                                    num = NewResX;
+                                    num = Convert.ToInt32(NewInternalWidth);
                                     splitSentence[1] = num.ToString();
                                     line = string.Join("= ", splitSentence);
                                 }
@@ -120,11 +130,11 @@ namespace HadesUltrawideGUIPatcher
                         }
                         else if (line.StartsWith("ScreenCenterX"))
                         {
-                            line = $"ScreenCenterX = {NewResX}/2";
+                            line = $"ScreenCenterX = {NewInternalWidth}/2";
                         }
                         else if (line.StartsWith("ScreenWidth"))
                         {
-                            line = $"ScreenWidth = {NewResX}";
+                            line = $"ScreenWidth = {NewInternalWidth}";
                         }
                         sb.AppendLine(line);
                     }
@@ -153,14 +163,14 @@ namespace HadesUltrawideGUIPatcher
                             {
                                 line = line.Remove(line.Length - 1);
                                 // Right aligned items
-                                if (num >= OriginalResX - AlignmentThreshold)
+                                if (num >= OriginalInternalWidth - SideAlignmentThreshold)
                                 {
-                                    num = NewResX + (num - OriginalResX);
+                                    num = Convert.ToInt32(NewInternalWidth) + (num - OriginalInternalWidth);
                                 }
                                 // Center aligned items
-                                else if (num >= AlignmentThreshold)
+                                else if (num >= SideAlignmentThreshold)
                                 {
-                                    num = NewCenterX + (num - OriginalCenterX);
+                                    num = Convert.ToInt32(NewCenterX) + (num - OriginalCenterX);
                                 }
                                 // The rest is left aligned, not adjusting those
 
@@ -330,7 +340,33 @@ namespace HadesUltrawideGUIPatcher
                     {
                         if (line.Contains("{ X = 1920") || line.Contains("{ X = -1920"))
                         {
-                            line = line.Replace("1920", NewResX.ToString());
+                            line = line.Replace("1920", NewInternalWidth.ToString());
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        public void PatchCreateScreenObstacle()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/UIScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("local obstacleId = S"))
+                        {
+                            line = line.Replace("OffsetX = params.X", $"OffsetX = params.X + {NewCenterX - OriginalCenterX}");
                         }
                         sb.AppendLine(line);
                     }
@@ -344,7 +380,34 @@ namespace HadesUltrawideGUIPatcher
             File.WriteAllText(filePath, sb.ToString());
         }
 
-        private static string ApplyUltrawideXOffsetForDouble(string line)
+        public void PatchVignette()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/RoomManager.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("ScreenAnchors.Vignette = CreateScreenObstacle"))
+                        {
+                            line = line.Replace("Y = ScreenCenterY, ", $"Y = ScreenCenterY, Scale = {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)},");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+
+        }
+        private string ApplyUltrawideXOffsetForDouble(string line)
         {
             var splitSentence = line.Split('=');
             double.TryParse(splitSentence[1], out double num);
@@ -357,7 +420,7 @@ namespace HadesUltrawideGUIPatcher
 
             return line;
         }
-        private static string ApplyUltrawideXOffsetForInteger(string line)
+        private string ApplyUltrawideXOffsetForInteger(string line)
         {
             var splitSentence = line.Split('=');
             int.TryParse(splitSentence[1], out int num);
@@ -373,10 +436,12 @@ namespace HadesUltrawideGUIPatcher
 
         public SteamGame Game { get; }
 
-        public const int OriginalResX = 1920;
-        public const int OriginalCenterX = 960;
-        public const int NewResX = 2580;
-        public const int NewCenterX = 1290;
-        public const int AlignmentThreshold = 120;
+        public const int OriginalInternalWidth = 1920;
+        public const int OriginalInternalHeight = 1080;
+        public const int OriginalCenterX = OriginalInternalWidth / 2;
+        public const int SideAlignmentThreshold = 120;
+
+        public readonly double NewInternalWidth;
+        public readonly double NewCenterX;
     }
 }
