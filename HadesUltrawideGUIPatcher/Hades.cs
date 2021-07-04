@@ -33,8 +33,8 @@ namespace HadesUltrawideGUIPatcher
             PatchAsphodel();
             PatchObstacles();
             // Patch functions below touch same files as PatchScripts()
-            //PatchCreateScreenObstacle();
-            //PatchVignette();
+            PatchCreateScreenObstacle();
+            PatchVignette();
         }
 
         private void PatchGUIConfigs()
