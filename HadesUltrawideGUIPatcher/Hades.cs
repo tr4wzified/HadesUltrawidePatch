@@ -33,6 +33,19 @@ namespace HadesUltrawideGUIPatcher
             PatchCombatPresentation();
             PatchEventPresentation();
             PatchTraitTrayScripts();
+            PatchAwardMenuScripts();
+            PatchGameStatsScreen();
+            PatchMarketScreen();
+            PatchBoonInfoScreenScripts();
+            PatchGhostAdminScreen();
+            PatchMetaUpgrades();
+            PatchMusicPlayerScreen();
+            PatchQuestLogScreen();
+            PatchSeedControlScreen();
+            PatchSellTraitScripts();
+            PatchStoreScripts();
+            PatchUpgradeChoice();
+            PatchWeaponUpgradeScripts();
         }
 
         private void PatchGUIConfigs()
@@ -392,6 +405,346 @@ namespace HadesUltrawideGUIPatcher
                         else if (line.Contains("ScreenAnchors.FullscreenAlertFxAnchor = CreateScreenObstacle"))
                         {
                             line = line.Replace("Y = ScreenCenterY", $"Y = ScreenCenterY, Position = \"Center\", Scale = {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchAwardMenuScripts()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/AwardMenuScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction ="))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+
+        private void PatchGameStatsScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/GameStatsScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.Blackout.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchMarketScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/MarketScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchBoonInfoScreenScripts()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/BoonInfoScreenScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchGhostAdminScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/GhostAdminScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+
+        private void PatchMetaUpgrades()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/MetaUpgrades.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchMusicPlayerScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/MusicPlayerScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchQuestLogScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/QuestLogScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchSeedControlScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/SeedControlScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchSellTraitScripts()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/SellTraitScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchStoreScripts()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/StoreScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchUpgradeChoice()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/UpgradeChoice.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 4 })"))
+                        {
+                            line = line.Replace("Fraction = 4", $"Fraction = 4 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchWeaponUpgradeScripts()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/WeaponUpgradeScripts.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
                         }
                         sb.AppendLine(line);
                     }
