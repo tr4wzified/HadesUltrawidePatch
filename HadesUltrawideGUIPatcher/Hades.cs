@@ -46,6 +46,8 @@ namespace HadesUltrawideGUIPatcher
             PatchStoreScripts();
             PatchUpgradeChoice();
             PatchWeaponUpgradeScripts();
+            PatchRunClearScreen();
+            PatchRunHistoryScreen();
         }
 
         private void PatchGUIConfigs()
@@ -192,6 +194,14 @@ namespace HadesUltrawideGUIPatcher
                         {
                             line = line.Replace("Y = offsetY or 0", "Y = offsetY or 0, Position = \"Right\"");
                         }
+                        else if (line.Contains("trait.AnchorId = CreateScreenObstacle") || line.Contains("local traitFrameId = CreateScreenObstacle"))
+                        {
+                            line = line.Replace("Group = \"Combat_UI\"", "Group = \"Combat_UI\", Position = \"Left\"");
+                        }
+                        else if (line.Contains("Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits))"))
+                        {
+                            line = line.Replace("Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits))", "Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits)), Position = \"Left\"");
+                        }
                         sb.AppendLine(line);
                     }
                 }
@@ -326,6 +336,10 @@ namespace HadesUltrawideGUIPatcher
                             line = line.Replace("Group = \"Combat_Menu_TraitTray\"", "Group = \"Combat_Menu_TraitTray\", Position = \"Left\"");
                             line = line.Replace("Group = \"Combat_Menu_TraitTray_Backing\"", "Group = \"Combat_Menu_TraitTray_Backing\", Position = \"Left\"");
                             line = line.Replace("Group = \"Combat_UI_Backing\"", "Group = \"Combat_UI_Backing\", Position = \"Left\"");
+                        }
+                        else if (line.Contains("SetScale({ Id = components.BackgroundTint.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10, Scale = {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
                         }
 
                         sb.AppendLine(line);
@@ -743,6 +757,58 @@ namespace HadesUltrawideGUIPatcher
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.Contains("SetScale({ Id = components.ShopBackgroundDim.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchRunClearScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/RunClearScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.Blackout.Id, Fraction = 10 })"))
+                        {
+                            line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"File {filePath} could not be read!");
+                Console.WriteLine(e.ToString());
+            }
+            File.WriteAllText(filePath, sb.ToString());
+        }
+        private void PatchRunHistoryScreen()
+        {
+            var filePath = Path.Combine(Game.Path, "Content/Scripts/RunHistoryScreen.lua");
+            var sb = new StringBuilder();
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SetScale({ Id = components.Blackout.Id, Fraction = 10 })"))
                         {
                             line = line.Replace("Fraction = 10", $"Fraction = 10 * {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
                         }
