@@ -2,7 +2,7 @@
 using GameFinder;
 using GameFinder.StoreHandlers.Steam;
 
-namespace HadesUltrawideGUIPatcher
+namespace HadesUltrawidePatch
 {
     class Program
     {

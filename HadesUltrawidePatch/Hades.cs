@@ -1,14 +1,16 @@
 ﻿using GameFinder.StoreHandlers.Steam;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace HadesUltrawideGUIPatcher
+namespace HadesUltrawidePatch
 {
     public class Hades
     {
@@ -26,6 +28,7 @@ namespace HadesUltrawideGUIPatcher
 
         public void PatchForUltrawide()
         {
+            PatchViewportWithHephaistos();
             PatchGUIConfigs();
             PatchUIScripts();
             PatchRoomManager();
@@ -57,12 +60,14 @@ namespace HadesUltrawideGUIPatcher
             var files = Directory.GetFiles(guiPath);
             foreach (var file in files)
             {
+                var fileName = Path.GetFileName(file);
                 var stringBuilder = new StringBuilder();
                 try
                 {
                     using (StreamReader sr = new StreamReader(file))
                     {
                         string line;
+                        int lineNumber = 1;
                         while ((line = sr.ReadLine()) != null)
                         {
                             string trimmedLine = line.Trim();
@@ -71,8 +76,13 @@ namespace HadesUltrawideGUIPatcher
                                 var splitSentence = line.Split('=');
                                 int.TryParse(splitSentence[1], out int num);
 
+                                // BuildNumberText, SaveAnim and ElapsedRunTimeText are right aligned
+                                if (fileName == "InGameUI.sjson" && (lineNumber == 261 || lineNumber == 75 || lineNumber == 110))
+                                {
+                                    num = Convert.ToInt32(NewInternalWidth) + (num - OriginalInternalWidth);
+                                }
                                 // Right aligned items
-                                if (num >= OriginalInternalWidth - SideAlignmentThreshold)
+                                else if (num >= OriginalInternalWidth - SideAlignmentThreshold)
                                 {
                                     num = Convert.ToInt32(NewInternalWidth) + (num - OriginalInternalWidth);
                                 }
@@ -100,6 +110,7 @@ namespace HadesUltrawideGUIPatcher
                                 }
                             }
                             stringBuilder.AppendLine(line);
+                            lineNumber++;
                         }
                     }
                 }
@@ -201,6 +212,14 @@ namespace HadesUltrawideGUIPatcher
                         else if (line.Contains("Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits))"))
                         {
                             line = line.Replace("Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits))", "Y = TraitUI.StartY + TraitUI.SpacerY * (-2 + TableLength(CurrentRun.Hero.RecentTraits)), Position = \"Left\"");
+                        }
+                        else if (line.Contains("local obstacleId = CreateScreenObstacle({Name = \"BlankObstacle\", Group = \"Combat_UI\", X = 70 + i * 32, Y = ScreenHeight - 95})"))
+                        {
+                            line = line.Replace("Y = ScreenHeight - 95", "Y = ScreenHeight - 95, Position = \"Left\"");
+                        }
+                        else if (line.Contains("ScreenAnchors.ShrinePointIconId = CreateScreenObstacle"))
+                        {
+                            line = line.Replace("Group = \"Combat_Menu_TraitTray\"", "Group = \"Combat_Menu_TraitTray\", Position = \"Left\"");
                         }
                         sb.AppendLine(line);
                     }
@@ -331,7 +350,8 @@ namespace HadesUltrawideGUIPatcher
                                  line.Contains("components.MetaUpgradeBacking = CreateScreenComponent") ||
                                  line.Contains("components[\"MetaIcon\"..k] = CreateScreenComponent") ||
                                  line.Contains("traitIcon = CreateScreenComponent") ||
-                                 line.Contains("components.DetailsBacking = CreateScreenComponent"))
+                                 line.Contains("components.DetailsBacking = CreateScreenComponent") ||
+                                 line.Contains("components[\"ShrineIcon\"..k] = CreateScreenComponent({ Name = \"TraitTrayMetaUpgradeIconButton\""))
                         {
                             line = line.Replace("Group = \"Combat_Menu_TraitTray\"", "Group = \"Combat_Menu_TraitTray\", Position = \"Left\"");
                             line = line.Replace("Group = \"Combat_Menu_TraitTray_Backing\"", "Group = \"Combat_Menu_TraitTray_Backing\", Position = \"Left\"");
@@ -419,6 +439,10 @@ namespace HadesUltrawideGUIPatcher
                         else if (line.Contains("ScreenAnchors.FullscreenAlertFxAnchor = CreateScreenObstacle"))
                         {
                             line = line.Replace("Y = ScreenCenterY", $"Y = ScreenCenterY, Position = \"Center\", Scale = {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        else if (line.Contains("CreateAnimation({ Name = \"BloodFrame\""))
+                        {
+                            line = line.Replace("OffsetX = ScreenCenterX", $"OffsetX = {NewCenterX}, Scale = {_screen.SixteenNineScaleFactor.ToString(CultureInfo.InvariantCulture)}");
                         }
                         sb.AppendLine(line);
                     }
@@ -822,6 +846,60 @@ namespace HadesUltrawideGUIPatcher
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+        }
+
+        private void PatchViewportWithHephaistos()
+        {
+            string githubURL = "https://github.com/nbusseneau/hephaistos/releases/download/v0.1.0/hephaistos.exe";
+            string fileName = "hephaistos.exe";
+            string downloadPath = Path.Combine(Game.Path, fileName);
+
+            if (!File.Exists(downloadPath)) {
+                try
+                {
+                    Console.WriteLine("Downloading Hephaistos to patch the Hades viewport...");
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(githubURL, downloadPath);
+                    }
+                }
+                catch (WebException ex)
+                {
+                    Console.WriteLine("An error occurred when attempted to download Hephaistos! Check your internet connection or try placing the executable directly in your Hades folder.");
+                    Console.WriteLine(ex.Message);
+                    return;
+                }
+            }
+
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = downloadPath;
+                startInfo.Arguments = $"patch {_screen.Width} {_screen.Height} -v --force";
+                startInfo.WorkingDirectory = Game.Path;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.CreateNoWindow = false;
+
+                using (Process hephaistos = new Process())
+                {
+                    hephaistos.StartInfo = startInfo;
+                    hephaistos.Start();
+                    string result = hephaistos.StandardOutput.ReadToEnd();
+                    hephaistos.WaitForExit();
+                    Console.WriteLine(hephaistos.ExitCode);
+                    Console.WriteLine(result);
+                    if (!result.ToLower().Contains("error"))
+                        Console.WriteLine("Succesfully patched Hades viewport with Hephaistos!");
+                    else
+                        Console.WriteLine("An error occurred when running Hephaistos!");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred when running Hephaistos!");
+                Console.WriteLine(ex.Message);
+            }
         }
         public SteamGame Game { get; }
 

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HadesUltrawideGUIPatcher
+namespace HadesUltrawidePatch
 {
     public static class GDI32
     {
