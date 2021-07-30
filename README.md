@@ -1,4 +1,4 @@
-# Hades Ultrawide GUI Patcher
+# Hades Ultrawide Patch
 This tool will patch Hades UI to work at 21:9. Do not use when you have a 16:9 screen.
 Internally uses [Hephaistos](https://github.com/nbusseneau/hephaistos) by nbusseneau to patch the viewport, the (kinda messy) UI work was done by me.
 
