@@ -28,29 +28,38 @@ namespace HadesUltrawidePatch
 
         public void PatchForUltrawide()
         {
-            PatchViewportWithHephaistos();
-            PatchGUIConfigs();
-            PatchUIScripts();
-            PatchRoomManager();
-            PatchRoomPresentation();
-            PatchCombatPresentation();
-            PatchEventPresentation();
-            PatchTraitTrayScripts();
-            PatchAwardMenuScripts();
-            PatchGameStatsScreen();
-            PatchMarketScreen();
-            PatchBoonInfoScreenScripts();
-            PatchGhostAdminScreen();
-            PatchMetaUpgrades();
-            PatchMusicPlayerScreen();
-            PatchQuestLogScreen();
-            PatchSeedControlScreen();
-            PatchSellTraitScripts();
-            PatchStoreScripts();
-            PatchUpgradeChoice();
-            PatchWeaponUpgradeScripts();
-            PatchRunClearScreen();
-            PatchRunHistoryScreen();
+            try
+            {
+                PatchViewportWithHephaistos();
+                PatchGUIConfigs();
+                PatchUIScripts();
+                PatchRoomManager();
+                PatchRoomPresentation();
+                PatchCombatPresentation();
+                PatchEventPresentation();
+                PatchTraitTrayScripts();
+                PatchAwardMenuScripts();
+                PatchGameStatsScreen();
+                PatchMarketScreen();
+                PatchBoonInfoScreenScripts();
+                PatchGhostAdminScreen();
+                PatchMetaUpgrades();
+                PatchMusicPlayerScreen();
+                PatchQuestLogScreen();
+                PatchSeedControlScreen();
+                PatchSellTraitScripts();
+                PatchStoreScripts();
+                PatchUpgradeChoice();
+                PatchWeaponUpgradeScripts();
+                PatchRunClearScreen();
+                PatchRunHistoryScreen();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while running the patcher, validate your game files before attempting to run the patcher again. Feel free to file an issue on GitHub if you are unable to resolve the issue yourself, I'll happily try to help!");
+                Console.WriteLine("GitHub Issues page: https://github.com/tr4wzified/HadesUltrawidePatch/issues");
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
 
         private void PatchGUIConfigs()
@@ -122,6 +131,7 @@ namespace HadesUltrawidePatch
 
                 File.WriteAllText(file, stringBuilder.ToString());
             }
+            Console.WriteLine("Patched GUI Configs!");
         }
 
         private void PatchUIScripts()
@@ -231,6 +241,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched UI Scripts!");
         }
 
         private void PatchRoomManager()
@@ -258,6 +269,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched RoomManager!");
         }
 
         private void PatchRoomPresentation()
@@ -293,6 +305,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched RoomPresentation!");
         }
         private void PatchTraitTrayScripts()
         {
@@ -372,6 +385,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched TraitTrayScripts!");
         }
         private void PatchCombatPresentation()
         {
@@ -415,6 +429,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched CombatPresentation!");
         }
 
         private void PatchEventPresentation()
@@ -454,6 +469,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched EventPresentation!");
         }
         private void PatchAwardMenuScripts()
         {
@@ -480,6 +496,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched AwardMenuScripts!");
         }
 
         private void PatchGameStatsScreen()
@@ -507,6 +524,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched GameStatsScreen!");
         }
         private void PatchMarketScreen()
         {
@@ -533,6 +551,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched MarketScreen!");
         }
         private void PatchBoonInfoScreenScripts()
         {
@@ -559,6 +578,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched BoonInfoScreenScripts!");
         }
         private void PatchGhostAdminScreen()
         {
@@ -585,6 +605,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched GhostAdminScreen!");
         }
 
         private void PatchMetaUpgrades()
@@ -612,6 +633,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched MetaUpgrades!");
         }
         private void PatchMusicPlayerScreen()
         {
@@ -638,6 +660,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched MusicPlayerScreen!");
         }
         private void PatchQuestLogScreen()
         {
@@ -664,6 +687,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched QuestLogScreen!");
         }
         private void PatchSeedControlScreen()
         {
@@ -690,6 +714,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched SeedControlScreen!");
         }
         private void PatchSellTraitScripts()
         {
@@ -716,6 +741,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched SellTraitScripts!");
         }
         private void PatchStoreScripts()
         {
@@ -742,6 +768,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched StoreScripts!");
         }
         private void PatchUpgradeChoice()
         {
@@ -768,6 +795,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched UpgradeChoice!");
         }
         private void PatchWeaponUpgradeScripts()
         {
@@ -794,6 +822,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched WeaponUpgradeScripts!");
         }
         private void PatchRunClearScreen()
         {
@@ -820,6 +849,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched RunClearScreen!");
         }
         private void PatchRunHistoryScreen()
         {
@@ -846,6 +876,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(e.ToString());
             }
             File.WriteAllText(filePath, sb.ToString());
+            Console.WriteLine("Patched RunHistoryScreen!");
         }
 
         private void PatchViewportWithHephaistos()
