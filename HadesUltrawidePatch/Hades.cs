@@ -1,4 +1,7 @@
-﻿using GameFinder.StoreHandlers.Steam;
+﻿using GameFinder;
+using GameFinder.StoreHandlers.EGS;
+using GameFinder.StoreHandlers.Steam;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,7 +26,14 @@ namespace HadesUltrawidePatch
 
             var steamHandler = new SteamHandler();
             steamHandler.FindAllGames();
+            Game = default(SteamGame);
             Game = steamHandler.Games.Find(x => x.Name == "Hades");
+            if (Game == default(SteamGame))
+            {
+                var epicHandler = new EGSHandler();
+                epicHandler.FindAllGames();
+                Game = epicHandler.Games.Find(x => x.Name == "Hades");
+            }
         }
 
         public void PatchForUltrawide()
@@ -53,12 +63,17 @@ namespace HadesUltrawidePatch
                 PatchWeaponUpgradeScripts();
                 PatchRunClearScreen();
                 PatchRunHistoryScreen();
+                Console.ReadLine();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred while running the patcher, validate your game files before attempting to run the patcher again. Feel free to file an issue on GitHub if you are unable to resolve the issue yourself, I'll happily try to help!");
                 Console.WriteLine("GitHub Issues page: https://github.com/tr4wzified/HadesUltrawidePatch/issues");
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine("");
+                Console.WriteLine($"Error Information");
+                Console.WriteLine($"-----------------");
+                Console.WriteLine(ex);
+                Console.WriteLine($"-----------------");
             }
         }
 
@@ -932,7 +947,7 @@ namespace HadesUltrawidePatch
                 Console.WriteLine(ex.Message);
             }
         }
-        public SteamGame Game { get; }
+        public AStoreGame Game { get; }
 
         public const int OriginalInternalWidth = 1920;
         public const int OriginalInternalHeight = 1080;

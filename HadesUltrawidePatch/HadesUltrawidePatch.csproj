@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="GameFinder" Version="1.6.3" />
+    <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="1.6.3" />
     <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="1.6.3" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
